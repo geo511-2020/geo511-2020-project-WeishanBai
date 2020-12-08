@@ -14,7 +14,7 @@
 
 <title>My Final Project Presentation</title>
 
-<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -30,14 +30,6 @@
 <script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
-<script src="site_libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
-<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
-<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
-<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-binding-2.0.3/leaflet.js"></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -394,8 +386,7 @@ div.tocify {
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>[~ 200 words]</p>
-<p>The introduction:123</p>
+<p>With the development of economy and urbanization, the dramatic changes of urban population have accelerated. This phenomenon is more common in megalopolises. People may move to cities for job opportunities or stay away from cities for better quality of life. At the same time as the population is changing, the house will switch between occupied and vacant. Meanwhile, housing prices will also be affected. In this research, we take the metropolitan area that New York City as an example, and show the plot and form of the changes in population, number of housing, housing value and household income in New York City. In addition, the method of regression analysis is used to explore the correlation between these variables. This study will propose three hypotheses: 1) The amount of urban population change is negatively related to the number of vacant houses;2) The value of the house is positively correlated with the income of the household; 3) The amount of change in urban population is positively correlated with house value. In order to verify the hypothesis, this study will use American Community Survey (ACS) Data from 2013-2018.</p>
 </div>
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
@@ -424,26 +415,15 @@ div.tocify {
 library(leaflet)
 library(kableExtra)
 library(dplyr)
+library(ggplot2)
+library(corrplot)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
 <div id="read-and-summary-data" class="section level2">
 <h2>Read and summary data</h2>
 <pre class="r"><code>datapath=&quot;./Dataset/NYC.csv&quot;
 nyc=read.csv(datapath)
-head(nyc)</code></pre>
-<pre><code>##            Area Year Total_population Occupied_housing Vacant_housing
-## 1 New York City 2018        8,398,748        3,184,496        334,957
-## 2         Bronx 2018        1,432,132          507,370         25,139
-## 3      Brooklyn 2018        2,582,830          969,317         84,350
-## 4     Manhattan 2018        1,628,701          752,258        134,024
-## 5        Queens 2018        2,278,906          788,110         77,699
-## 6 Staten Island 2018          476,179          167,441         13,745
-##   Median_value Median_income
-## 1      645,100        63,799
-## 2      436,100        38,467
-## 3      759,400        61,220
-## 4    1,013,400        85,066
-## 5      577,400        69,320
-## 6      556,000        82,166</code></pre>
+mode(nyc[,&quot;Total_population&quot;])</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>nyc %&gt;% 
   slice(1:10) %&gt;% #show only 1:n rows
   kable(digits=2,align=&quot;c&quot;)%&gt;% #make table and round to two digits
@@ -708,30 +688,43 @@ Manhattan
 </tr>
 </tbody>
 </table>
-<p>Add any additional processing steps here.</p>
 </div>
+</div>
+<div id="processing-and-plot-the-data" class="section level1">
+<h1>Processing and plot the data</h1>
+<p>The change of population of NYC</p>
+<pre class="r"><code>nyc_population&lt;-nyc%&gt;%filter(Area==&quot;New York City&quot;)
+p1&lt;-nyc_population%&gt;%
+  ggplot()+geom_line(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = &quot;Population&quot;),size=1)+
+  geom_point(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = &quot;Population&quot;),size=3)+
+  geom_line(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour =&quot;The number of Vacant housing&quot;),size=1) + 
+  geom_point(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour = &quot;The number of Vacant housing&quot;),size=3)+
+  scale_colour_manual(&quot;&quot;,values = c(&quot;Population&quot; = &quot;red&quot;,&quot;The number of Vacant housing&quot; = &quot;green&quot;))+
+  xlab(&quot;Year&quot;)+ylab(&quot;Amount&quot;)
+  
+p1</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /> The change of population of each county</p>
+<pre class="r"><code>no_nyc&lt;-nyc%&gt;%filter(Area!=&quot;New York City&quot;)
+
+p2&lt;-ggplot()+geom_line(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = &quot;Population&quot;),size=1)+
+  geom_point(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = &quot;Population&quot;),size=3)+
+  geom_line(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour =&quot;The number of Vacant housing&quot;),size=1) + 
+  geom_point(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour = &quot;The number of Vacant housing&quot;),size=3)+scale_y_discrete(breaks=NULL)+
+  scale_colour_manual(&quot;&quot;,values = c(&quot;Population&quot; = &quot;red&quot;,&quot;The number of Vacant housing&quot; = &quot;green&quot;))+
+  xlab(&quot;Year&quot;)+ylab(&quot;Amount&quot;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=3,as.table = FALSE)
+p2</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>datapath1=&quot;./Dataset/NYC1.csv&quot;
+nyc_cor=read.csv(datapath1)
+res_cor&lt;-cor(x=nyc_cor[,&quot;Total_population&quot;],y=nyc_cor[,&quot;Vacant_housing&quot;])
+res_cor</code></pre>
+<p>[1] 0.9576632</p>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
 <p>[~200 words]</p>
 <p>Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.</p>
 <p>Show tables, plots, etc. and describe them.</p>
-<pre class="r"><code>m &lt;- leaflet(data) %&gt;% 
-  addTiles() %&gt;% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %&gt;% 
-  addPopups(~x[2], ~y[2], &quot;Random popup&quot;)
-m  # a map with the default OSM tile layer</code></pre>
-<div class="figure">
-<div id="htmlwidget-ee3ba569a9dab9826cf5" style="width:576px;height:288px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ee3ba569a9dab9826cf5">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[-36.0685946233571,-2.26401376537979,57.0413153897971,12.3687832430005,44.0704183001071,-24.1572656482458,-23.1351983360946,-1.06368178501725,-46.233471147716,16.0990034323186,0.103362891823053,-43.3524394780397,56.9222447555512,-29.5604835636914,5.89935768395662,26.8394433986396,14.3687908910215,55.7579426653683,36.8657209072262,-45.2352513838559],[-113.059430262074,5.24427157826722,-20.4388090409338,118.651212109253,-91.4141181763262,109.499134495854,49.6211594715714,158.932039858773,127.328045619652,65.6157712172717,79.8806211724877,178.724563764408,96.0077781323344,51.0248411726207,31.3310447707772,131.143203461543,61.4175287168473,-33.3464754000306,54.9250253755599,8.90654920600355],[16.8110902491026,16.9180049165152,10.5178620386869,8.72033895924687,18.4579034126364,13.8337658403907,12.2468616487458,11.4595083845779,10.6598489743192,6.79118930129334,12.3239111271687,14.4105129817035,10.3630893863738,9.60324528394267,8.57885201810859,6.01024892646819,19.5034142024815,5.65222843550146,9.41697975387797,11.3615641766228],null,null,{"interactive":true,"className":"","stroke":true,"color":["e","c","d","a","a","e","d","a","b","b","c","b","a","d","b","b","b","c","d","c"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["e","c","d","a","a","e","d","a","b","b","c","b","a","d","b","b","b","c","d","c"],"fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPopups","args":[-2.26401376537979,5.24427157826722,"Random popup",null,null,{"maxWidth":300,"minWidth":50,"autoPan":true,"keepInView":false,"closeButton":true,"className":""}]}],"limits":{"lat":[-46.233471147716,57.0413153897971],"lng":[-113.059430262074,178.724563764408]}},"evals":[],"jsHooks":[]}</script>
-<p class="caption">
-Map of completely random data
-</p>
-</div>
-<pre class="r"><code>data %&gt;% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>

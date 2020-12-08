@@ -5,10 +5,8 @@ subtitle: Subtitle here if desired
 ---
 
 # Introduction
+With the development of economy and urbanization, the dramatic changes of urban population have accelerated. This phenomenon is more common in megalopolises. People may move to cities for job opportunities or stay away from cities for better quality of life. At the same time as the population is changing, the house will switch between occupied and vacant. Meanwhile, housing prices will also be affected. In this research, we take the metropolitan area that New York City as an example, and show the plot and form of the changes in population, number of housing, housing value and household income in New York City. In addition, the method of regression analysis is used to explore the correlation between these variables. This study will propose three hypotheses: 1) The amount of urban population change is negatively related to the number of vacant houses;2) The value of the house is positively correlated with the income of the household; 3) The amount of change in urban population is positively correlated with house value. In order to verify the hypothesis, this study will use American Community Survey (ACS) Data from 2013-2018.
 
-[~ 200 words]
-
-The introduction:123
 
 # Materials and methods
 
@@ -47,6 +45,8 @@ library(tidyverse)
 library(leaflet)
 library(kableExtra)
 library(dplyr)
+library(ggplot2)
+library(corrplot)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
@@ -54,8 +54,7 @@ knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```{r}
 datapath="./Dataset/NYC.csv"
 nyc=read.csv(datapath)
-head(nyc)
-
+mode(nyc[,"Total_population"])
 ```
 
 ```{r, results='asis'}
@@ -66,7 +65,42 @@ nyc %>%
                   c("striped", "hover", "condensed", "responsive")) #apply other formatting
 ```
 
-Add any additional processing steps here.
+# Processing and plot the data
+The change of population of NYC
+```{r, results='asis'}
+
+nyc_population<-nyc%>%filter(Area=="New York City")
+p1<-nyc_population%>%
+  ggplot()+geom_line(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = "Population"),size=1)+
+  geom_point(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = "Population"),size=3)+
+  geom_line(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour ="The number of Vacant housing"),size=1) + 
+  geom_point(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour = "The number of Vacant housing"),size=3)+
+  scale_colour_manual("",values = c("Population" = "red","The number of Vacant housing" = "green"))+
+  xlab("Year")+ylab("Amount")
+  
+p1
+```
+The change of population of each county
+
+
+```{r, results='asis'}
+no_nyc<-nyc%>%filter(Area!="New York City")
+
+p2<-ggplot()+geom_line(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = "Population"),size=1)+
+  geom_point(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = "Population"),size=3)+
+  geom_line(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour ="The number of Vacant housing"),size=1) + 
+  geom_point(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour = "The number of Vacant housing"),size=3)+scale_y_discrete(breaks=NULL)+
+  scale_colour_manual("",values = c("Population" = "red","The number of Vacant housing" = "green"))+
+  xlab("Year")+ylab("Amount")+facet_wrap(~Area,scales="free_y",nrow=3,as.table = FALSE)
+p2
+```
+
+```{r, results='asis'}
+datapath1="./Dataset/NYC1.csv"
+nyc_cor=read.csv(datapath1)
+res_cor<-cor(x=nyc_cor[,"Total_population"],y=nyc_cor[,"Vacant_housing"])
+res_cor
+```
 
 # Results
 
@@ -77,18 +111,12 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 Show tables, plots, etc. and describe them.
 
 ```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
-m <- leaflet(data) %>% 
-  addTiles() %>% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
-  addPopups(~x[2], ~y[2], "Random popup")
-m  # a map with the default OSM tile layer
+
 ```
 
 
 ```{r}
-data %>% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()
+
 ```
 
 # Conclusions
