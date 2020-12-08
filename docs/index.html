@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Your name here" />
+<meta name="author" content="Weishan Bai" />
 
 
-<title>My Final Project Template</title>
+<title>My Final Project Presentation</title>
 
 <script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -385,9 +385,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">My Final Project Template</h1>
+<h1 class="title toc-ignore">My Final Project Presentation</h1>
 <h3 class="subtitle">Subtitle here if desired</h3>
-<h4 class="author">Your name here</h4>
+<h4 class="author">Weishan Bai</h4>
 
 </div>
 
@@ -423,18 +423,28 @@ div.tocify {
 <pre class="r"><code>library(tidyverse)
 library(leaflet)
 library(kableExtra)
+library(dplyr)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
-<div id="download-and-clean-all-required-data" class="section level2">
-<h2>Download and clean all required data</h2>
-<pre class="r"><code>n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))</code></pre>
-<pre class="r"><code>data %&gt;% 
+<div id="read-and-summary-data" class="section level2">
+<h2>Read and summary data</h2>
+<pre class="r"><code>datapath=&quot;./Dataset/NYC.csv&quot;
+nyc=read.csv(datapath)
+head(nyc)</code></pre>
+<pre><code>##            Area Year Total_population Occupied_housing Vacant_housing
+## 1 New York City 2018        8,398,748        3,184,496        334,957
+## 2         Bronx 2018        1,432,132          507,370         25,139
+## 3      Brooklyn 2018        2,582,830          969,317         84,350
+## 4     Manhattan 2018        1,628,701          752,258        134,024
+## 5        Queens 2018        2,278,906          788,110         77,699
+## 6 Staten Island 2018          476,179          167,441         13,745
+##   Median_value Median_income
+## 1      645,100        63,799
+## 2      436,100        38,467
+## 3      759,400        61,220
+## 4    1,013,400        85,066
+## 5      577,400        69,320
+## 6      556,000        82,166</code></pre>
+<pre class="r"><code>nyc %&gt;% 
   slice(1:10) %&gt;% #show only 1:n rows
   kable(digits=2,align=&quot;c&quot;)%&gt;% #make table and round to two digits
   kable_styling(bootstrap_options = 
@@ -443,191 +453,257 @@ data=data.frame(x=runif(n,-180,180),
 <thead>
 <tr>
 <th style="text-align:center;">
-x
+Area
 </th>
 <th style="text-align:center;">
-y
+Year
 </th>
 <th style="text-align:center;">
-size
+Total_population
 </th>
 <th style="text-align:center;">
-category
+Occupied_housing
 </th>
 <th style="text-align:center;">
-value
+Vacant_housing
+</th>
+<th style="text-align:center;">
+Median_value
+</th>
+<th style="text-align:center;">
+Median_income
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:center;">
--113.06
+New York City
 </td>
 <td style="text-align:center;">
--36.07
+2018
 </td>
 <td style="text-align:center;">
-16.81
+8,398,748
 </td>
 <td style="text-align:center;">
-e
+3,184,496
 </td>
 <td style="text-align:center;">
--0.68
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-5.24
+334,957
 </td>
 <td style="text-align:center;">
--2.26
+645,100
 </td>
 <td style="text-align:center;">
-16.92
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--0.18
+63,799
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
--20.44
+Bronx
 </td>
 <td style="text-align:center;">
-57.04
+2018
 </td>
 <td style="text-align:center;">
-10.52
+1,432,132
 </td>
 <td style="text-align:center;">
-d
+507,370
 </td>
 <td style="text-align:center;">
-0.20
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-118.65
+25,139
 </td>
 <td style="text-align:center;">
-12.37
+436,100
 </td>
 <td style="text-align:center;">
-8.72
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
--0.84
+38,467
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
--91.41
+Brooklyn
 </td>
 <td style="text-align:center;">
-44.07
+2018
 </td>
 <td style="text-align:center;">
-18.46
+2,582,830
 </td>
 <td style="text-align:center;">
-a
+969,317
 </td>
 <td style="text-align:center;">
-0.25
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-109.50
+84,350
 </td>
 <td style="text-align:center;">
--24.16
+759,400
 </td>
 <td style="text-align:center;">
-13.83
-</td>
-<td style="text-align:center;">
-e
-</td>
-<td style="text-align:center;">
--1.69
+61,220
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-49.62
+Manhattan
 </td>
 <td style="text-align:center;">
--23.14
+2018
 </td>
 <td style="text-align:center;">
-12.25
+1,628,701
 </td>
 <td style="text-align:center;">
-d
+752,258
 </td>
 <td style="text-align:center;">
-0.42
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-158.93
+134,024
 </td>
 <td style="text-align:center;">
--1.06
+1,013,400
 </td>
 <td style="text-align:center;">
-11.46
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
--1.38
+85,066
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-127.33
+Queens
 </td>
 <td style="text-align:center;">
--46.23
+2018
 </td>
 <td style="text-align:center;">
-10.66
+2,278,906
 </td>
 <td style="text-align:center;">
-b
+788,110
 </td>
 <td style="text-align:center;">
--2.29
+77,699
+</td>
+<td style="text-align:center;">
+577,400
+</td>
+<td style="text-align:center;">
+69,320
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-65.62
+Staten Island
 </td>
 <td style="text-align:center;">
-16.10
+2018
 </td>
 <td style="text-align:center;">
-6.79
+476,179
 </td>
 <td style="text-align:center;">
-b
+167,441
 </td>
 <td style="text-align:center;">
-0.25
+13,745
+</td>
+<td style="text-align:center;">
+556,000
+</td>
+<td style="text-align:center;">
+82,166
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+8,622,698
+</td>
+<td style="text-align:center;">
+3,159,674
+</td>
+<td style="text-align:center;">
+337,670
+</td>
+<td style="text-align:center;">
+609,500
+</td>
+<td style="text-align:center;">
+97,836
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+1,471,160
+</td>
+<td style="text-align:center;">
+503,985
+</td>
+<td style="text-align:center;">
+24,866
+</td>
+<td style="text-align:center;">
+400,300
+</td>
+<td style="text-align:center;">
+55,423
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+2,648,771
+</td>
+<td style="text-align:center;">
+956,223
+</td>
+<td style="text-align:center;">
+88,064
+</td>
+<td style="text-align:center;">
+701,800
+</td>
+<td style="text-align:center;">
+87,312
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+1,664,727
+</td>
+<td style="text-align:center;">
+764,218
+</td>
+<td style="text-align:center;">
+122,166
+</td>
+<td style="text-align:center;">
+976,100
+</td>
+<td style="text-align:center;">
+151,745
 </td>
 </tr>
 </tbody>
