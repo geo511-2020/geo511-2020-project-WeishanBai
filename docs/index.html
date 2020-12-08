@@ -407,9 +407,6 @@ div.tocify {
 <li>The third most important thing</li>
 </ol>
 <p>See <a href="http://rmarkdown.rstudio.com/">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
-<p>Here’s my first code chunk.</p>
-<pre class="r"><code>1+2</code></pre>
-<pre><code>## [1] 3</code></pre>
 <p>Load any required packages in a code chunk (you may need to install some packages):</p>
 <pre class="r"><code>library(tidyverse)
 library(leaflet)
@@ -417,13 +414,15 @@ library(kableExtra)
 library(dplyr)
 library(ggplot2)
 library(corrplot)
+library(cowplot)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
 <div id="read-and-summary-data" class="section level2">
 <h2>Read and summary data</h2>
-<pre class="r"><code>datapath=&quot;./Dataset/NYC.csv&quot;
+<pre class="r"><code>options(scipen = 200)
+datapath=&quot;./Dataset/NYC.csv&quot;
 nyc=read.csv(datapath)
-mode(nyc[,&quot;Total_population&quot;])</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
+nyc_whole&lt;-nyc%&gt;%filter(Area==&quot;New York City&quot;)
+each_county&lt;-nyc%&gt;%filter(Area!=&quot;New York City&quot;)</code></pre>
 <pre class="r"><code>nyc %&gt;% 
   slice(1:10) %&gt;% #show only 1:n rows
   kable(digits=2,align=&quot;c&quot;)%&gt;% #make table and round to two digits
@@ -690,41 +689,282 @@ Manhattan
 </table>
 </div>
 </div>
-<div id="processing-and-plot-the-data" class="section level1">
-<h1>Processing and plot the data</h1>
-<p>The change of population of NYC</p>
-<pre class="r"><code>nyc_population&lt;-nyc%&gt;%filter(Area==&quot;New York City&quot;)
-p1&lt;-nyc_population%&gt;%
-  ggplot()+geom_line(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = &quot;Population&quot;),size=1)+
-  geom_point(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = &quot;Population&quot;),size=3)+
-  geom_line(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour =&quot;The number of Vacant housing&quot;),size=1) + 
-  geom_point(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour = &quot;The number of Vacant housing&quot;),size=3)+
-  scale_colour_manual(&quot;&quot;,values = c(&quot;Population&quot; = &quot;red&quot;,&quot;The number of Vacant housing&quot; = &quot;green&quot;))+
-  xlab(&quot;Year&quot;)+ylab(&quot;Amount&quot;)
-  
-p1</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /> The change of population of each county</p>
-<pre class="r"><code>no_nyc&lt;-nyc%&gt;%filter(Area!=&quot;New York City&quot;)
-
-p2&lt;-ggplot()+geom_line(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = &quot;Population&quot;),size=1)+
-  geom_point(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = &quot;Population&quot;),size=3)+
-  geom_line(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour =&quot;The number of Vacant housing&quot;),size=1) + 
-  geom_point(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour = &quot;The number of Vacant housing&quot;),size=3)+scale_y_discrete(breaks=NULL)+
-  scale_colour_manual(&quot;&quot;,values = c(&quot;Population&quot; = &quot;red&quot;,&quot;The number of Vacant housing&quot; = &quot;green&quot;))+
-  xlab(&quot;Year&quot;)+ylab(&quot;Amount&quot;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=3,as.table = FALSE)
-p2</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<pre class="r"><code>datapath1=&quot;./Dataset/NYC1.csv&quot;
-nyc_cor=read.csv(datapath1)
-res_cor&lt;-cor(x=nyc_cor[,&quot;Total_population&quot;],y=nyc_cor[,&quot;Vacant_housing&quot;])
-res_cor</code></pre>
-<p>[1] 0.9576632</p>
+<div id="visualization-and-analysis-of-the-data" class="section level1">
+<h1>Visualization and analysis of the data</h1>
+<div id="first-hypothesis" class="section level2">
+<h2>First hypothesis</h2>
+<p>The change of the number of vacant housing and the household income of NYC</p>
+<pre class="r"><code>p1&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of population&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+p2&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of  vacant housing&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p1, p2)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="1526" height="428" /></p>
+<p>The change of population and number of vacant housing of each county</p>
+<pre class="r"><code>p3&lt;-each_county%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of \n population in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p4&lt;-each_county%&gt;%ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of \n vacant housing in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p3, p4)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="1526" height="728" /></p>
+</div>
+<div id="second-hypothesis" class="section level2">
+<h2>Second hypothesis</h2>
+<p>The change of median housing value and median household income of NYC</p>
+<pre class="r"><code>p5&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+p6&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median household income(dollors)&#39;)+labs(title = &#39;The change of \n  median household income&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p5, p6)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="1526" height="428" /></p>
+<p>The change of median housing value and median household income of each county</p>
+<pre class="r"><code>p7&lt;-each_county%&gt;%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of  median \n housing value in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p8&lt;-each_county%&gt;%ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of  median \n household income in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p7, p8)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="1526" height="728" /></p>
+</div>
+<div id="the-third-hypothesis" class="section level2">
+<h2>The third hypothesis</h2>
+<p>The change of population and median housing value of NYC</p>
+<pre class="r"><code>p9&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n population&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+p10&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p9, p10)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="1526" height="428" /></p>
+<p>The change of population and median housing value of each county</p>
+<pre class="r"><code>p11&lt;-each_county%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of \n population in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p12&lt;-each_county%&gt;%ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of median value \n of housing in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p11, p12)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="1526" height="728" /></p>
+<p>The result of Pearson Correlation Coefficient</p>
+</div>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
 <p>[~200 words]</p>
 <p>Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.</p>
 <p>Show tables, plots, etc. and describe them.</p>
+<pre class="r"><code>population_vacant&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_value_income,bx_value_income,bn_value_income,mh_value_income,q_value_income,si_value_income))
+population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing&quot;,font_size = 17)%&gt;% 
+  kable_styling(bootstrap_options = 
+                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+The pearson correlation cofficient between total of population and the number of vacant housing
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Area
+</th>
+<th style="text-align:center;">
+Pearson.correlation.coefficient
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+0.62
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+0.44
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+0.63
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Queens
+</td>
+<td style="text-align:center;">
+0.76
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Staten Island
+</td>
+<td style="text-align:center;">
+0.64
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>value_income&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_pop_vacant,bx_pop_vacant,bn_pop_vacant,mh_pop_vacant,q_pop_vacant,si_pop_vacant))
+population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing&quot;,font_size = 17)%&gt;% 
+  kable_styling(bootstrap_options = 
+                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+The pearson correlation cofficient between total of population and the number of vacant housing
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Area
+</th>
+<th style="text-align:center;">
+Pearson.correlation.coefficient
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+0.62
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+0.44
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+0.63
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Queens
+</td>
+<td style="text-align:center;">
+0.76
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Staten Island
+</td>
+<td style="text-align:center;">
+0.64
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>pop_value&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_pop_value,bx_pop_value,bn_pop_value,mh_pop_value,q_pop_value,si_pop_value))
+population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing&quot;,font_size = 17)%&gt;% 
+  kable_styling(bootstrap_options = 
+                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+The pearson correlation cofficient between total of population and the number of vacant housing
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Area
+</th>
+<th style="text-align:center;">
+Pearson.correlation.coefficient
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+0.62
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+0.44
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+0.63
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Queens
+</td>
+<td style="text-align:center;">
+0.76
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Staten Island
+</td>
+<td style="text-align:center;">
+0.64
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>

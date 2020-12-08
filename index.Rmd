@@ -1,7 +1,7 @@
 ---
 title: "My Final Project Presentation"
 author: Weishan Bai
-subtitle: Subtitle here if desired
+subtitle: Correlation analysis between population changing and housing changing——Taking New York City as an example
 ---
 
 # Introduction
@@ -32,12 +32,6 @@ You can do numbers like this:
 
 See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the amazing things you can do.
 
-
-Here's my first code chunk.
-```{r}
-1+2
-```
-
 Load any required packages in a code chunk (you may need to install some packages):
 
 ```{r, message=F, warning=F}
@@ -47,14 +41,17 @@ library(kableExtra)
 library(dplyr)
 library(ggplot2)
 library(corrplot)
+library(cowplot)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
 ## Read and summary data
 ```{r}
+options(scipen = 200)
 datapath="./Dataset/NYC.csv"
 nyc=read.csv(datapath)
-mode(nyc[,"Total_population"])
+nyc_whole<-nyc%>%filter(Area=="New York City")
+each_county<-nyc%>%filter(Area!="New York City")
 ```
 
 ```{r, results='asis'}
@@ -65,42 +62,149 @@ nyc %>%
                   c("striped", "hover", "condensed", "responsive")) #apply other formatting
 ```
 
-# Processing and plot the data
-The change of population of NYC
-```{r, results='asis'}
+# Visualization and analysis of the data
 
-nyc_population<-nyc%>%filter(Area=="New York City")
-p1<-nyc_population%>%
-  ggplot()+geom_line(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = "Population"),size=1)+
-  geom_point(data = nyc_population,aes(x = Year,y = Total_population,group=1,colour = "Population"),size=3)+
-  geom_line(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour ="The number of Vacant housing"),size=1) + 
-  geom_point(data = nyc_population,aes(x = Year,y = Vacant_housing,group=1,colour = "The number of Vacant housing"),size=3)+
-  scale_colour_manual("",values = c("Population" = "red","The number of Vacant housing" = "green"))+
-  xlab("Year")+ylab("Amount")
-  
-p1
-```
-The change of population of each county
+## First hypothesis
 
 
-```{r, results='asis'}
-no_nyc<-nyc%>%filter(Area!="New York City")
+The change of the number of vacant housing and the household income of NYC
+```{r, results='asis',out.width = "1526", out.height = "428"}
+p1<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of population')+
+  theme(plot.title = element_text(hjust = 0.5))
+p2<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('The number of vacant housing')+labs(title = 'The change of  vacant housing')+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p1, p2)
 
-p2<-ggplot()+geom_line(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = "Population"),size=1)+
-  geom_point(data = no_nyc,aes(x = Year,y = Total_population,group=Area,colour = "Population"),size=3)+
-  geom_line(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour ="The number of Vacant housing"),size=1) + 
-  geom_point(data = no_nyc,aes(x = Year,y = Vacant_housing,group=Area,colour = "The number of Vacant housing"),size=3)+scale_y_discrete(breaks=NULL)+
-  scale_colour_manual("",values = c("Population" = "red","The number of Vacant housing" = "green"))+
-  xlab("Year")+ylab("Amount")+facet_wrap(~Area,scales="free_y",nrow=3,as.table = FALSE)
-p2
 ```
 
-```{r, results='asis'}
-datapath1="./Dataset/NYC1.csv"
-nyc_cor=read.csv(datapath1)
-res_cor<-cor(x=nyc_cor[,"Total_population"],y=nyc_cor[,"Vacant_housing"])
-res_cor
+The change of population and number of vacant housing of each county
+```{r, results='asis',out.width = "1526", out.height = "728"}
+p3<-each_county%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of \n population in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p4<-each_county%>%ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('The number of vacant housing')+labs(title = 'The change of \n vacant housing in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p3, p4)
+
 ```
+
+## Second hypothesis
+The change of median housing value and median household income of NYC
+```{r, results='asis',out.width = "1526", out.height = "428"}
+p5<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Median value(dollors)')+labs(title = 'The change of \n median value of housing')+
+  theme(plot.title = element_text(hjust = 0.5))
+p6<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('Median household income(dollors)')+labs(title = 'The change of \n  median household income')+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p5, p6)
+
+```
+
+The change of median housing value and median household income of each county
+```{r, results='asis',out.width = "1526", out.height = "728"}
+p7<-each_county%>%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of  median \n housing value in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p8<-each_county%>%ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('The number of vacant housing')+labs(title = 'The change of  median \n household income in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p7, p8)
+
+```
+
+
+## The third hypothesis
+The change of population and median housing value of NYC
+```{r, results='asis',out.width = "1526", out.height = "428"}
+p9<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Median value(dollors)')+labs(title = 'The change of \n population')+
+  theme(plot.title = element_text(hjust = 0.5))
+p10<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('Median value(dollors)')+labs(title = 'The change of \n median value of housing')+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p9, p10)
+
+```
+
+The change of population and median housing value of each county
+```{r, results='asis',out.width = "1526", out.height = "728"}
+p11<-each_county%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of \n population in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p12<-each_county%>%ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('Median value(dollors)')+labs(title = 'The change of median value \n of housing in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p11, p12)
+
+```
+
+The result of Pearson Correlation Coefficient
+```{r, results='asis',include=FALSE}
+nyc_pop<-nyc_whole[,"Total_population"]
+nyc_vh<-nyc_whole[,"Vacant_housing"]
+nyc_value<-nyc_whole[,"Median_value"]
+nyc_income<-nyc_whole[,"Median_income"]
+bx<-each_county%>%filter(Area=='Bronx')
+bx_pop<-bx[,"Total_population"]
+bx_vh<-bx[,"Vacant_housing"]
+bx_value<-bx[,"Median_value"]
+bx_income<-bx[,"Median_income"]
+bn<-each_county%>%filter(Area=='Brooklyn')
+bn_pop<-bn[,"Total_population"]
+bn_vh<-bn[,"Vacant_housing"]
+bn_value<-bn[,"Median_value"]
+bn_income<-bn[,"Median_income"]
+bn<-each_county%>%filter(Area=='Brooklyn')
+bn_pop<-bn[,"Total_population"]
+bn_vh<-bn[,"Vacant_housing"]
+bn_value<-bn[,"Median_value"]
+bn_income<-bn[,"Median_income"]
+mh<-each_county%>%filter(Area=='Manhattan')
+mh_pop<-mh[,"Total_population"]
+mh_vh<-mh[,"Vacant_housing"]
+mh_value<-mh[,"Median_value"]
+mh_income<-mh[,"Median_income"]
+q<-each_county%>%filter(Area=='Queens')
+q_pop<-q[,"Total_population"]
+q_vh<-q[,"Vacant_housing"]
+q_value<-q[,"Median_value"]
+q_income<-q[,"Median_income"]
+si<-each_county%>%filter(Area=='Staten Island')
+si_pop<-si[,"Total_population"]
+si_vh<-si[,"Vacant_housing"]
+si_value<-si[,"Median_value"]
+si_income<-si[,"Median_income"]
+
+# for whole nyc
+nyc_pop_vacant<-cor(x=nyc_pop,y=nyc_vh)
+nyc_value_income<-cor(x=nyc_value,y=nyc_income)
+nyc_pop_value<-cor(x=nyc_pop,y=nyc_value)
+#for Bronx
+bx_pop_vacant<-cor(x=bx_pop,y=bx_vh)
+bx_value_income<-cor(x=bx_value,y=bx_income)
+bx_pop_value<-cor(x=bx_pop,y=bx_value)
+#for Brooklyn
+bn_pop_vacant<-cor(x=bn_pop,y=bn_vh)
+bn_value_income<-cor(x=bn_value,y=bn_income)
+bn_pop_value<-cor(x=bn_pop,y=bn_value)
+#for Manhattan
+mh_pop_vacant<-cor(x=mh_pop,y=mh_vh)
+mh_value_income<-cor(x=mh_value,y=mh_income)
+mh_pop_value<-cor(x=mh_pop,y=mh_value)
+#for Queens
+q_pop_vacant<-cor(x=q_pop,y=q_vh)
+q_value_income<-cor(x=q_value,y=q_income)
+q_pop_value<-cor(x=q_pop,y=q_value)
+# for Staten Island
+si_pop_vacant<-cor(x=si_pop,y=q_vh)
+si_value_income<-cor(x=si_value,y=q_income)
+si_pop_value<-cor(x=si_pop,y=q_value)
+
+
+```
+
+
 
 # Results
 
@@ -115,8 +219,24 @@ Show tables, plots, etc. and describe them.
 ```
 
 
-```{r}
+```{r, results='asis'}
+population_vacant<-data.frame('Area'=c("New York City","Bronx","Brooklyn","Manhattan","Queens","Staten Island"),'Pearson correlation coefficient'=c(nyc_value_income,bx_value_income,bn_value_income,mh_value_income,q_value_income,si_value_income))
+population_vacant%>%kable(digits=2,align="c",caption = "The pearson correlation cofficient between total of population and the number of vacant housing",font_size = 17)%>% 
+  kable_styling(bootstrap_options = 
+                  c("striped", "hover", "condensed", "responsive"))
+```
+```{r, results='asis'}
+value_income<-data.frame('Area'=c("New York City","Bronx","Brooklyn","Manhattan","Queens","Staten Island"),'Pearson correlation coefficient'=c(nyc_pop_vacant,bx_pop_vacant,bn_pop_vacant,mh_pop_vacant,q_pop_vacant,si_pop_vacant))
+population_vacant%>%kable(digits=2,align="c",caption = "The pearson correlation cofficient between total of population and the number of vacant housing",font_size = 17)%>% 
+  kable_styling(bootstrap_options = 
+                  c("striped", "hover", "condensed", "responsive"))
+```
 
+```{r, results='asis'}
+pop_value<-data.frame('Area'=c("New York City","Bronx","Brooklyn","Manhattan","Queens","Staten Island"),'Pearson correlation coefficient'=c(nyc_pop_value,bx_pop_value,bn_pop_value,mh_pop_value,q_pop_value,si_pop_value))
+population_vacant%>%kable(digits=2,align="c",caption = "The pearson correlation cofficient between total of population and the number of vacant housing",font_size = 17)%>% 
+  kable_styling(bootstrap_options = 
+                  c("striped", "hover", "condensed", "responsive"))
 ```
 
 # Conclusions
