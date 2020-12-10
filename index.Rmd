@@ -1,105 +1,230 @@
 ---
-title: "My Final Project Template"
-author: Your name here
-subtitle: Subtitle here if desired
+title: "My Final Project Presentation"
+author: Weishan Bai
+subtitle: Correlation analysis between population changing and housing changing——Taking New York City as an example
 ---
 
 # Introduction
-
-[~ 200 words]
-
-Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.
+With the development of economy and urbanization, the dramatic changes of urban population have accelerated. This phenomenon is more common in megalopolises. People may move to cities for job opportunities or stay away from cities for better quality of life. At the same time as the population is changing, the house will switch between occupied and vacant. Meanwhile, housing prices will also be affected. In this research, we take the metropolitan area that New York City as an example, and show the plot and form of the changes in population, number of housing, housing value and household income in New York City. In addition, the method of regression analysis is used to explore the correlation between these variables. This study will propose three hypotheses: 1) The amount of urban population change is negatively related to the number of vacant houses;2) The value of the house is positively correlated with the income of the household; 3) The amount of change in urban population is positively correlated with house value. In order to verify the hypothesis, this study will use American Community Survey (ACS) Data from 2013-2018.
 
 # Materials and methods
 
-[~ 200 words]
+Data: 1)Demographic data set of New York city from 2013-2018
+      2)Housing data set of New York city from 2013-2018
+      3)Economic datas et of New York city from 2013-2018
+     
+All data sets comes from [American Community Survey (ACS) Data Tables](https://www1.nyc.gov/site/planning/planning-level/nyc-population/american-community-survey.page) and are in csv format.
 
-Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.
+The processes are descried in following steps.
 
-Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
+1.Download the data.
+2.Extract attributes from the data sets and integrate them in a single data set.
+3.Visualize data.
+4.Correlation analysis.
+5.Test hypothesis.
 
-Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
-
-You can do bullets like this:
-
-* The first most important thing
-* The second most important thing
-* The third most important thing
-
-You can do numbers like this:
-
-1. The first most important thing
-2. The second most important thing
-3. The third most important thing
-
-See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the amazing things you can do.
-
-
-Here's my first code chunk.
-```{r}
-1+2
-```
-
-Load any required packages in a code chunk (you may need to install some packages):
+Load any required packages in a code chunk.
 
 ```{r, message=F, warning=F}
 library(tidyverse)
 library(leaflet)
 library(kableExtra)
+library(dplyr)
+library(ggplot2)
+library(corrplot)
+library(cowplot)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
-## Download and clean all required data
+## Read and summary data
 ```{r}
-n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))
+options(scipen = 200)
+datapath="./Dataset/NYC.csv"
+nyc=read.csv(datapath)
+nyc_whole<-nyc%>%filter(Area=="New York City")
+each_county<-nyc%>%filter(Area!="New York City")
 ```
 
 ```{r, results='asis'}
-data %>% 
+nyc %>% 
   slice(1:10) %>% #show only 1:n rows
   kable(digits=2,align="c")%>% #make table and round to two digits
   kable_styling(bootstrap_options = 
                   c("striped", "hover", "condensed", "responsive")) #apply other formatting
 ```
 
-Add any additional processing steps here.
+# Visualization and analysis of the data
 
-# Results
+## First hypothesis
 
-[~200 words]
 
-Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.
+The change of the population and the number of vacant housing of NYC
+```{r, results='asis',out.width = "1526", out.height = "428"}
+p1<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of population in NYC')+
+  theme(plot.title = element_text(hjust = 0.5))
+p2<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('The number of vacant housing')+labs(title = 'The change of vacant housing in NYC')+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p1, p2)
 
-Show tables, plots, etc. and describe them.
+```
 
-```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
-m <- leaflet(data) %>% 
-  addTiles() %>% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
-  addPopups(~x[2], ~y[2], "Random popup")
-m  # a map with the default OSM tile layer
+The change of population and the number of vacant housing of each county
+```{r, results='asis',out.width = "1526", out.height = "728"}
+p3<-each_county%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of \n population in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p4<-each_county%>%ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('The number of vacant housing')+labs(title = 'The change of \n vacant housing in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p3, p4)
+
+```
+
+## Second hypothesis
+The change of median housing value and median household income of NYC
+```{r, results='asis',out.width = "1526", out.height = "428"}
+p5<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Median value(dollors)')+labs(title = 'The change of \n median value of housing in NYC')+
+  theme(plot.title = element_text(hjust = 0.5))
+p6<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('Median household income(dollors)')+labs(title = 'The change of \n  median household income in NYC')+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p5, p6)
+
+```
+
+The change of median housing value and median household income of each county
+```{r, results='asis',out.width = "1526", out.height = "728"}
+p7<-each_county%>%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of  median \n housing value in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p8<-each_county%>%ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('The number of vacant housing')+labs(title = 'The change of  median \n household income in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p7, p8)
+
 ```
 
 
-```{r}
-data %>% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()
+## The third hypothesis
+The change of population and median housing value of NYC
+```{r, results='asis',out.width = "1526", out.height = "428"}
+p9<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Median value(dollors)')+labs(title = 'The change of \n population in NYC')+
+  theme(plot.title = element_text(hjust = 0.5))
+p10<-nyc_whole%>%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('Median value(dollors)')+labs(title = 'The change of \n median value of housing in NYC')+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p9, p10)
+
+```
+
+The change of population and median housing value of each county
+```{r, results='asis',out.width = "1526", out.height = "728"}
+p11<-each_county%>%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab('Population')+labs(title = 'The change of \n population in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p12<-each_county%>%ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab('Median value(dollors)')+labs(title = 'The change of median value \n of housing in each county')+facet_wrap(~Area,scales="free_y",nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p11, p12)
+
+```
+
+```{r, results='asis',include=FALSE}
+nyc_pop<-nyc_whole[,"Total_population"]
+nyc_vh<-nyc_whole[,"Vacant_housing"]
+nyc_value<-nyc_whole[,"Median_value"]
+nyc_income<-nyc_whole[,"Median_income"]
+bx<-each_county%>%filter(Area=='Bronx')
+bx_pop<-bx[,"Total_population"]
+bx_vh<-bx[,"Vacant_housing"]
+bx_value<-bx[,"Median_value"]
+bx_income<-bx[,"Median_income"]
+bn<-each_county%>%filter(Area=='Brooklyn')
+bn_pop<-bn[,"Total_population"]
+bn_vh<-bn[,"Vacant_housing"]
+bn_value<-bn[,"Median_value"]
+bn_income<-bn[,"Median_income"]
+bn<-each_county%>%filter(Area=='Brooklyn')
+bn_pop<-bn[,"Total_population"]
+bn_vh<-bn[,"Vacant_housing"]
+bn_value<-bn[,"Median_value"]
+bn_income<-bn[,"Median_income"]
+mh<-each_county%>%filter(Area=='Manhattan')
+mh_pop<-mh[,"Total_population"]
+mh_vh<-mh[,"Vacant_housing"]
+mh_value<-mh[,"Median_value"]
+mh_income<-mh[,"Median_income"]
+q<-each_county%>%filter(Area=='Queens')
+q_pop<-q[,"Total_population"]
+q_vh<-q[,"Vacant_housing"]
+q_value<-q[,"Median_value"]
+q_income<-q[,"Median_income"]
+si<-each_county%>%filter(Area=='Staten Island')
+si_pop<-si[,"Total_population"]
+si_vh<-si[,"Vacant_housing"]
+si_value<-si[,"Median_value"]
+si_income<-si[,"Median_income"]
+
+# for whole nyc
+nyc_pop_vacant<-cor(x=nyc_pop,y=nyc_vh)
+nyc_value_income<-cor(x=nyc_value,y=nyc_income)
+nyc_pop_value<-cor(x=nyc_pop,y=nyc_value)
+#for Bronx
+bx_pop_vacant<-cor(x=bx_pop,y=bx_vh)
+bx_value_income<-cor(x=bx_value,y=bx_income)
+bx_pop_value<-cor(x=bx_pop,y=bx_value)
+#for Brooklyn
+bn_pop_vacant<-cor(x=bn_pop,y=bn_vh)
+bn_value_income<-cor(x=bn_value,y=bn_income)
+bn_pop_value<-cor(x=bn_pop,y=bn_value)
+#for Manhattan
+mh_pop_vacant<-cor(x=mh_pop,y=mh_vh)
+mh_value_income<-cor(x=mh_value,y=mh_income)
+mh_pop_value<-cor(x=mh_pop,y=mh_value)
+#for Queens
+q_pop_vacant<-cor(x=q_pop,y=q_vh)
+q_value_income<-cor(x=q_value,y=q_income)
+q_pop_value<-cor(x=q_pop,y=q_value)
+# for Staten Island
+si_pop_vacant<-cor(x=si_pop,y=q_vh)
+si_value_income<-cor(x=si_value,y=q_income)
+si_pop_value<-cor(x=si_pop,y=q_value)
+
+
+```
+
+
+
+# Results
+
+We use Pearson correlation cofficient to quantify the correlation between the two variables. When Pearson correlation cofficient approaches 1, it means that the two variables have a stronger positive correlation. When Pearson correlation cofficient approaches -1, it means that the two variables have a stronger negative correlation. When Pearson correlation cofficient approaches 0, that indicates the correlation between the two variables is weak.
+
+```{r, results='asis'}
+population_vacant<-data.frame('Area'=c("New York City","Bronx","Brooklyn","Manhattan","Queens","Staten Island"),'Pearson correlation coefficient'=c(nyc_pop_vacant,bx_pop_vacant,bn_pop_vacant,mh_pop_vacant,q_pop_vacant,si_pop_vacant))
+population_vacant%>%kable(digits=2,align="c",caption = "The pearson correlation cofficient between total of population and the number of vacant housing.",font_size = 17)%>% 
+  kable_styling(bootstrap_options = 
+                  c("striped", "hover", "condensed", "responsive"))
+```
+```{r, results='asis'}
+value_income<-data.frame('Area'=c("New York City","Bronx","Brooklyn","Manhattan","Queens","Staten Island"),'Pearson correlation coefficient'=c(nyc_value_income,bx_value_income,bn_value_income,mh_value_income,q_value_income,si_value_income))
+value_income%>%kable(digits=2,align="c",caption = "The pearson correlation cofficient between the median housing value and the median household income.",font_size = 17)%>% 
+  kable_styling(bootstrap_options = 
+                  c("striped", "hover", "condensed", "responsive"))
+```
+
+```{r, results='asis'}
+pop_value<-data.frame('Area'=c("New York City","Bronx","Brooklyn","Manhattan","Queens","Staten Island"),'Pearson correlation coefficient'=c(nyc_pop_value,bx_pop_value,bn_pop_value,mh_pop_value,q_pop_value,si_pop_value))
+pop_value%>%kable(digits=2,align="c",caption = "The pearson correlation cofficient between total of population and the median housing value.",font_size = 17)%>% 
+  kable_styling(bootstrap_options = 
+                  c("striped", "hover", "condensed", "responsive"))
 ```
 
 # Conclusions
 
-[~200 words]
-
-Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
+As the result of polts and tables, we can test the hypotheses.In the first hypothesis, we assume the amount of urban population change is negatively related to the number of vacant houses.From the study results,only the bronx county can fulfill this assumption. In the second hypothesis, we assume the value of the house is positively correlated with the income of the household.This assumption is basically true. In the third hypothesis, we can only find the amount of changing in urban population is positively correlated with house value in Manhattan and Staten Island.
 
 # References
 
-All sources are cited in a consistent manner
+http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r. \n
+https://www1.nyc.gov/site/planning/index.page.

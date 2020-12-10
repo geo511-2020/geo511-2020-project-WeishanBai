@@ -9,12 +9,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Your name here" />
+<meta name="author" content="Weishan Bai" />
 
 
-<title>My Final Project Template</title>
+<title>My Final Project Presentation</title>
 
-<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -26,15 +26,19 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
-<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
-<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
-<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-binding-2.0.3/leaflet.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -373,56 +377,40 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">My Final Project Template</h1>
-<h3 class="subtitle">Subtitle here if desired</h3>
-<h4 class="author">Your name here</h4>
+<h1 class="title toc-ignore">My Final Project Presentation</h1>
+<h3 class="subtitle">Correlation analysis between population changing and housing changing——Taking New York City as an example</h3>
+<h4 class="author">Weishan Bai</h4>
 
 </div>
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>[~ 200 words]</p>
-<p>Clearly stated background and questions / hypotheses / problems being addressed. Sets up the analysis in an interesting and compelling way.</p>
+<p>With the development of economy and urbanization, the dramatic changes of urban population have accelerated. This phenomenon is more common in megalopolises. People may move to cities for job opportunities or stay away from cities for better quality of life. At the same time as the population is changing, the house will switch between occupied and vacant. Meanwhile, housing prices will also be affected. In this research, we take the metropolitan area that New York City as an example, and show the plot and form of the changes in population, number of housing, housing value and household income in New York City. In addition, the method of regression analysis is used to explore the correlation between these variables. This study will propose three hypotheses: 1) The amount of urban population change is negatively related to the number of vacant houses;2) The value of the house is positively correlated with the income of the household; 3) The amount of change in urban population is positively correlated with house value. In order to verify the hypothesis, this study will use American Community Survey (ACS) Data from 2013-2018.</p>
 </div>
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
-<p>[~ 200 words]</p>
-<p>Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.</p>
-<p>Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.</p>
-<p>Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.</p>
-<p>You can do bullets like this:</p>
-<ul>
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ul>
-<p>You can do numbers like this:</p>
-<ol style="list-style-type: decimal">
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ol>
-<p>See <a href="http://rmarkdown.rstudio.com/">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
-<p>Here’s my first code chunk.</p>
-<pre class="r"><code>1+2</code></pre>
-<pre><code>## [1] 3</code></pre>
-<p>Load any required packages in a code chunk (you may need to install some packages):</p>
+<p>Data: 1)Demographic data set of New York city from 2013-2018 2)Housing data set of New York city from 2013-2018 3)Economic datas et of New York city from 2013-2018</p>
+<p>All data sets comes from <a href="https://www1.nyc.gov/site/planning/planning-level/nyc-population/american-community-survey.page">American Community Survey (ACS) Data Tables</a> and are in csv format.</p>
+<p>The processes are descried in following steps.</p>
+<p>1.Download the data. 2.Extract attributes from the data sets and integrate them in a single data set. 3.Visualize data. 4.Correlation analysis. 5.Test hypothesis.</p>
+<p>Load any required packages in a code chunk.</p>
 <pre class="r"><code>library(tidyverse)
 library(leaflet)
 library(kableExtra)
+library(dplyr)
+library(ggplot2)
+library(corrplot)
+library(cowplot)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
-<div id="download-and-clean-all-required-data" class="section level2">
-<h2>Download and clean all required data</h2>
-<pre class="r"><code>n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))</code></pre>
-<pre class="r"><code>data %&gt;% 
+<div id="read-and-summary-data" class="section level2">
+<h2>Read and summary data</h2>
+<pre class="r"><code>options(scipen = 200)
+datapath=&quot;./Dataset/NYC.csv&quot;
+nyc=read.csv(datapath)
+nyc_whole&lt;-nyc%&gt;%filter(Area==&quot;New York City&quot;)
+each_county&lt;-nyc%&gt;%filter(Area!=&quot;New York City&quot;)</code></pre>
+<pre class="r"><code>nyc %&gt;% 
   slice(1:10) %&gt;% #show only 1:n rows
   kable(digits=2,align=&quot;c&quot;)%&gt;% #make table and round to two digits
   kable_styling(bootstrap_options = 
@@ -431,228 +419,544 @@ data=data.frame(x=runif(n,-180,180),
 <thead>
 <tr>
 <th style="text-align:center;">
-x
+Area
 </th>
 <th style="text-align:center;">
-y
+Year
 </th>
 <th style="text-align:center;">
-size
+Total_population
 </th>
 <th style="text-align:center;">
-category
+Occupied_housing
 </th>
 <th style="text-align:center;">
-value
+Vacant_housing
+</th>
+<th style="text-align:center;">
+Median_value
+</th>
+<th style="text-align:center;">
+Median_income
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:center;">
--107.26
+New York City
 </td>
 <td style="text-align:center;">
-9.30
+2018
 </td>
 <td style="text-align:center;">
-11.36
+8,398,748
 </td>
 <td style="text-align:center;">
-c
+3,184,496
 </td>
 <td style="text-align:center;">
--1.77
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--111.14
+334,957
 </td>
 <td style="text-align:center;">
--29.83
+645,100
 </td>
 <td style="text-align:center;">
-10.72
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--0.11
+63,799
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-110.32
+Bronx
 </td>
 <td style="text-align:center;">
--31.88
+2018
 </td>
 <td style="text-align:center;">
-14.28
+1,432,132
 </td>
 <td style="text-align:center;">
-d
+507,370
 </td>
 <td style="text-align:center;">
-0.70
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-51.00
+25,139
 </td>
 <td style="text-align:center;">
--4.69
+436,100
 </td>
 <td style="text-align:center;">
-15.94
-</td>
-<td style="text-align:center;">
-e
-</td>
-<td style="text-align:center;">
-0.11
+38,467
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
--31.76
+Brooklyn
 </td>
 <td style="text-align:center;">
-12.75
+2018
 </td>
 <td style="text-align:center;">
-6.32
+2,582,830
 </td>
 <td style="text-align:center;">
-c
+969,317
 </td>
 <td style="text-align:center;">
--1.18
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--154.28
+84,350
 </td>
 <td style="text-align:center;">
--40.69
+759,400
 </td>
 <td style="text-align:center;">
-6.96
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
-0.48
+61,220
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-101.27
+Manhattan
 </td>
 <td style="text-align:center;">
--41.97
+2018
 </td>
 <td style="text-align:center;">
-10.14
+1,628,701
 </td>
 <td style="text-align:center;">
-b
+752,258
 </td>
 <td style="text-align:center;">
--0.59
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-9.98
+134,024
 </td>
 <td style="text-align:center;">
--16.61
+1,013,400
 </td>
 <td style="text-align:center;">
-9.76
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
--0.83
+85,066
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-63.27
+Queens
 </td>
 <td style="text-align:center;">
--39.94
+2018
 </td>
 <td style="text-align:center;">
-6.24
+2,278,906
 </td>
 <td style="text-align:center;">
-d
+788,110
 </td>
 <td style="text-align:center;">
--1.88
+77,699
+</td>
+<td style="text-align:center;">
+577,400
+</td>
+<td style="text-align:center;">
+69,320
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-120.75
+Staten Island
 </td>
 <td style="text-align:center;">
-6.98
+2018
 </td>
 <td style="text-align:center;">
-13.83
+476,179
 </td>
 <td style="text-align:center;">
-e
+167,441
 </td>
 <td style="text-align:center;">
--0.95
+13,745
+</td>
+<td style="text-align:center;">
+556,000
+</td>
+<td style="text-align:center;">
+82,166
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+8,622,698
+</td>
+<td style="text-align:center;">
+3,159,674
+</td>
+<td style="text-align:center;">
+337,670
+</td>
+<td style="text-align:center;">
+609,500
+</td>
+<td style="text-align:center;">
+97,836
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+1,471,160
+</td>
+<td style="text-align:center;">
+503,985
+</td>
+<td style="text-align:center;">
+24,866
+</td>
+<td style="text-align:center;">
+400,300
+</td>
+<td style="text-align:center;">
+55,423
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+2,648,771
+</td>
+<td style="text-align:center;">
+956,223
+</td>
+<td style="text-align:center;">
+88,064
+</td>
+<td style="text-align:center;">
+701,800
+</td>
+<td style="text-align:center;">
+87,312
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+2017
+</td>
+<td style="text-align:center;">
+1,664,727
+</td>
+<td style="text-align:center;">
+764,218
+</td>
+<td style="text-align:center;">
+122,166
+</td>
+<td style="text-align:center;">
+976,100
+</td>
+<td style="text-align:center;">
+151,745
 </td>
 </tr>
 </tbody>
 </table>
-<p>Add any additional processing steps here.</p>
+</div>
+</div>
+<div id="visualization-and-analysis-of-the-data" class="section level1">
+<h1>Visualization and analysis of the data</h1>
+<div id="first-hypothesis" class="section level2">
+<h2>First hypothesis</h2>
+<p>The change of the population and the number of vacant housing of NYC</p>
+<pre class="r"><code>p1&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of population in NYC&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+p2&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of vacant housing in NYC&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p1, p2)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="1526" height="428" /></p>
+<p>The change of population and the number of vacant housing of each county</p>
+<pre class="r"><code>p3&lt;-each_county%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of \n population in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p4&lt;-each_county%&gt;%ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of \n vacant housing in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p3, p4)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="1526" height="728" /></p>
+</div>
+<div id="second-hypothesis" class="section level2">
+<h2>Second hypothesis</h2>
+<p>The change of median housing value and median household income of NYC</p>
+<pre class="r"><code>p5&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing in NYC&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+p6&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median household income(dollors)&#39;)+labs(title = &#39;The change of \n  median household income in NYC&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p5, p6)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="1526" height="428" /></p>
+<p>The change of median housing value and median household income of each county</p>
+<pre class="r"><code>p7&lt;-each_county%&gt;%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of  median \n housing value in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p8&lt;-each_county%&gt;%ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of  median \n household income in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p7, p8)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="1526" height="728" /></p>
+</div>
+<div id="the-third-hypothesis" class="section level2">
+<h2>The third hypothesis</h2>
+<p>The change of population and median housing value of NYC</p>
+<pre class="r"><code>p9&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n population in NYC&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+p10&lt;-nyc_whole%&gt;%
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing in NYC&#39;)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p9, p10)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="1526" height="428" /></p>
+<p>The change of population and median housing value of each county</p>
+<pre class="r"><code>p11&lt;-each_county%&gt;%
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of \n population in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+p12&lt;-each_county%&gt;%ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of median value \n of housing in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
+  theme(plot.title = element_text(hjust = 0.5))
+plot_grid(p11, p12)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="1526" height="728" /></p>
 </div>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
-<p>[~200 words]</p>
-<p>Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.</p>
-<p>Show tables, plots, etc. and describe them.</p>
-<pre class="r"><code>m &lt;- leaflet(data) %&gt;% 
-  addTiles() %&gt;% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %&gt;% 
-  addPopups(~x[2], ~y[2], &quot;Random popup&quot;)
-m  # a map with the default OSM tile layer</code></pre>
-<div class="figure">
-<div id="htmlwidget-30fe21b4c0b9f4d96b62" style="width:576px;height:288px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-30fe21b4c0b9f4d96b62">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[9.30170754902065,-29.8280154448003,-31.8831084296107,-4.68705408275127,12.7471503429115,-40.6861814763397,-41.9714264106005,-16.6061587259173,-39.9376808758825,6.97950504720211,-56.0505143646151,28.2724470645189,7.67273761332035,-56.2407155614346,-18.906586188823,-5.07408133707941,51.0753118805587,26.2375680729747,-17.2111759800464,-46.0531650390476],[-107.258561421186,-111.136349346489,110.316809182987,50.9994036052376,-31.7576803732663,-154.283440634608,101.267439471558,9.98111807741225,63.2684198208153,120.751987276599,112.084084013477,-40.2497000433505,115.996386688203,-97.0774834044278,46.3868192397058,18.0404147878289,32.6691307034343,162.665719650686,-130.348035022616,-98.0877787526697],[11.3611012336332,10.7176390814129,14.2767865059432,15.9402201732155,6.31799388560466,6.9598665041849,10.1387770706788,9.75600986974314,6.24454097007401,13.8269931823015,6.06261725537479,11.9514911866281,5.6887250544969,12.722786962986,5.86161236860789,12.1091489249375,16.6473157645669,8.31269876798615,12.4877287016716,17.8843388694804],null,null,{"interactive":true,"className":"","stroke":true,"color":["c","c","d","e","c","a","b","c","d","e","b","b","b","e","a","e","d","e","b","c"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["c","c","d","e","c","a","b","c","d","e","b","b","b","e","a","e","d","e","b","c"],"fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPopups","args":[-29.8280154448003,-111.136349346489,"Random popup",null,null,{"maxWidth":300,"minWidth":50,"autoPan":true,"keepInView":false,"closeButton":true,"className":""}]}],"limits":{"lat":[-56.2407155614346,51.0753118805587],"lng":[-154.283440634608,162.665719650686]}},"evals":[],"jsHooks":[]}</script>
-<p class="caption">
-Map of completely random data
-</p>
-</div>
-<pre class="r"><code>data %&gt;% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>We use Pearson correlation cofficient to quantify the correlation between the two variables. When Pearson correlation cofficient approaches 1, it means that the two variables have a stronger positive correlation. When Pearson correlation cofficient approaches -1, it means that the two variables have a stronger negative correlation. When Pearson correlation cofficient approaches 0, that indicates the correlation between the two variables is weak.</p>
+<pre class="r"><code>population_vacant&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_pop_vacant,bx_pop_vacant,bn_pop_vacant,mh_pop_vacant,q_pop_vacant,si_pop_vacant))
+population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing.&quot;,font_size = 17)%&gt;% 
+  kable_styling(bootstrap_options = 
+                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+The pearson correlation cofficient between total of population and the number of vacant housing.
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Area
+</th>
+<th style="text-align:center;">
+Pearson.correlation.coefficient
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+0.31
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+-0.70
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+0.56
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+-0.18
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Queens
+</td>
+<td style="text-align:center;">
+0.51
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Staten Island
+</td>
+<td style="text-align:center;">
+0.86
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>value_income&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_value_income,bx_value_income,bn_value_income,mh_value_income,q_value_income,si_value_income))
+value_income%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between the median housing value and the median household income.&quot;,font_size = 17)%&gt;% 
+  kable_styling(bootstrap_options = 
+                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+The pearson correlation cofficient between the median housing value and the median household income.
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Area
+</th>
+<th style="text-align:center;">
+Pearson.correlation.coefficient
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+0.62
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+0.44
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+0.63
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Queens
+</td>
+<td style="text-align:center;">
+0.76
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Staten Island
+</td>
+<td style="text-align:center;">
+0.64
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>pop_value&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_pop_value,bx_pop_value,bn_pop_value,mh_pop_value,q_pop_value,si_pop_value))
+pop_value%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the median housing value.&quot;,font_size = 17)%&gt;% 
+  kable_styling(bootstrap_options = 
+                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+The pearson correlation cofficient between total of population and the median housing value.
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Area
+</th>
+<th style="text-align:center;">
+Pearson.correlation.coefficient
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+New York City
+</td>
+<td style="text-align:center;">
+0.15
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bronx
+</td>
+<td style="text-align:center;">
+0.03
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Brooklyn
+</td>
+<td style="text-align:center;">
+-0.02
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manhattan
+</td>
+<td style="text-align:center;">
+0.29
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Queens
+</td>
+<td style="text-align:center;">
+-0.03
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Staten Island
+</td>
+<td style="text-align:center;">
+0.81
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
-<p>[~200 words]</p>
-<p>Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.</p>
+<p>As the result of polts and tables, we can test the hypotheses.In the first hypothesis, we assume the amount of urban population change is negatively related to the number of vacant houses.From the study results,only the bronx county can fulfill this assumption. In the second hypothesis, we assume the value of the house is positively correlated with the income of the household.This assumption is basically true. In the third hypothesis, we can only find the amount of changing in urban population is positively correlated with house value in Manhattan and Staten Island.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<p>All sources are cited in a consistent manner</p>
+<p><a href="http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r" class="uri">http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r</a>.  <a href="https://www1.nyc.gov/site/planning/index.page" class="uri">https://www1.nyc.gov/site/planning/index.page</a>.</p>
 </div>
 
 <!-- give the footer some space -->
@@ -679,7 +983,7 @@ Map of completely random data
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
