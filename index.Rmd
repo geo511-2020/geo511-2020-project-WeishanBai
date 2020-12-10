@@ -243,7 +243,7 @@ population_vacant%>%kable(digits=2,align="c",caption = "The pearson correlation 
 
 [~200 words]
 
-Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
+Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation. 
 
 # References
 
