@@ -390,24 +390,11 @@ div.tocify {
 </div>
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
-<p>[~ 200 words]</p>
-<p>Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.</p>
-<p>Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.</p>
-<p>Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.</p>
-<p>You can do bullets like this:</p>
-<ul>
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ul>
-<p>You can do numbers like this:</p>
-<ol style="list-style-type: decimal">
-<li>The first most important thing</li>
-<li>The second most important thing</li>
-<li>The third most important thing</li>
-</ol>
-<p>See <a href="http://rmarkdown.rstudio.com/">http://rmarkdown.rstudio.com/</a> for all the amazing things you can do.</p>
-<p>Load any required packages in a code chunk (you may need to install some packages):</p>
+<p>Data: 1)Demographic data set of New York city from 2013-2018 2)Housing data set of New York city from 2013-2018 3)Economic datas et of New York city from 2013-2018</p>
+<p>All data sets comes from <a href="https://www1.nyc.gov/site/planning/planning-level/nyc-population/american-community-survey.page">American Community Survey (ACS) Data Tables</a> and are in csv format.</p>
+<p>The processes are descried in following steps.</p>
+<p>1.Download the data. 2.Extract attributes from the data sets and integrate them in a single data set. 3.Visualize data. 4.Correlation analysis. 5.Test hypothesis.</p>
+<p>Load any required packages in a code chunk.</p>
 <pre class="r"><code>library(tidyverse)
 library(leaflet)
 library(kableExtra)
@@ -693,16 +680,16 @@ Manhattan
 <h1>Visualization and analysis of the data</h1>
 <div id="first-hypothesis" class="section level2">
 <h2>First hypothesis</h2>
-<p>The change of the number of vacant housing and the household income of NYC</p>
+<p>The change of the population and the number of vacant housing of NYC</p>
 <pre class="r"><code>p1&lt;-nyc_whole%&gt;%
-  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of population&#39;)+
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of population in NYC&#39;)+
   theme(plot.title = element_text(hjust = 0.5))
 p2&lt;-nyc_whole%&gt;%
-  ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of  vacant housing&#39;)+
+  ggplot(aes(x=Year,y=Vacant_housing,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;The number of vacant housing&#39;)+labs(title = &#39;The change of vacant housing in NYC&#39;)+
   theme(plot.title = element_text(hjust = 0.5))
 plot_grid(p1, p2)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="1526" height="428" /></p>
-<p>The change of population and number of vacant housing of each county</p>
+<p>The change of population and the number of vacant housing of each county</p>
 <pre class="r"><code>p3&lt;-each_county%&gt;%
   ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Population&#39;)+labs(title = &#39;The change of \n population in each county&#39;)+facet_wrap(~Area,scales=&quot;free_y&quot;,nrow=5,as.table = TRUE)+
   theme(plot.title = element_text(hjust = 0.5))
@@ -715,10 +702,10 @@ plot_grid(p3, p4)</code></pre>
 <h2>Second hypothesis</h2>
 <p>The change of median housing value and median household income of NYC</p>
 <pre class="r"><code>p5&lt;-nyc_whole%&gt;%
-  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing&#39;)+
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing in NYC&#39;)+
   theme(plot.title = element_text(hjust = 0.5))
 p6&lt;-nyc_whole%&gt;%
-  ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median household income(dollors)&#39;)+labs(title = &#39;The change of \n  median household income&#39;)+
+  ggplot(aes(x=Year,y=Median_income,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median household income(dollors)&#39;)+labs(title = &#39;The change of \n  median household income in NYC&#39;)+
   theme(plot.title = element_text(hjust = 0.5))
 plot_grid(p5, p6)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="1526" height="428" /></p>
@@ -735,10 +722,10 @@ plot_grid(p7, p8)</code></pre>
 <h2>The third hypothesis</h2>
 <p>The change of population and median housing value of NYC</p>
 <pre class="r"><code>p9&lt;-nyc_whole%&gt;%
-  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n population&#39;)+
+  ggplot(aes(x=Year,y=Total_population,group=Area))+geom_line(size=1,color=2)+geom_point(size=3,color=4)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n population in NYC&#39;)+
   theme(plot.title = element_text(hjust = 0.5))
 p10&lt;-nyc_whole%&gt;%
-  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing&#39;)+
+  ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line(size=1,color=3)+geom_point(size=3,color=5)+ylab(&#39;Median value(dollors)&#39;)+labs(title = &#39;The change of \n median value of housing in NYC&#39;)+
   theme(plot.title = element_text(hjust = 0.5))
 plot_grid(p9, p10)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="1526" height="428" /></p>
@@ -750,21 +737,18 @@ p12&lt;-each_county%&gt;%ggplot(aes(x=Year,y=Median_value,group=Area))+geom_line
   theme(plot.title = element_text(hjust = 0.5))
 plot_grid(p11, p12)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="1526" height="728" /></p>
-<p>The result of Pearson Correlation Coefficient</p>
 </div>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
-<p>[~200 words]</p>
-<p>Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.</p>
-<p>Show tables, plots, etc. and describe them.</p>
-<pre class="r"><code>population_vacant&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_value_income,bx_value_income,bn_value_income,mh_value_income,q_value_income,si_value_income))
-population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing&quot;,font_size = 17)%&gt;% 
+<p>We use Pearson correlation cofficient to quantify the correlation between the two variables. When Pearson correlation cofficient approaches 1, it means that the two variables have a stronger positive correlation. When Pearson correlation cofficient approaches -1, it means that the two variables have a stronger negative correlation. When Pearson correlation cofficient approaches 0, that indicates the correlation between the two variables is weak.</p>
+<pre class="r"><code>population_vacant&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_pop_vacant,bx_pop_vacant,bn_pop_vacant,mh_pop_vacant,q_pop_vacant,si_pop_vacant))
+population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing.&quot;,font_size = 17)%&gt;% 
   kable_styling(bootstrap_options = 
                   c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-The pearson correlation cofficient between total of population and the number of vacant housing
+The pearson correlation cofficient between total of population and the number of vacant housing.
 </caption>
 <thead>
 <tr>
@@ -782,7 +766,7 @@ Pearson.correlation.coefficient
 New York City
 </td>
 <td style="text-align:center;">
-0.62
+0.31
 </td>
 </tr>
 <tr>
@@ -790,7 +774,7 @@ New York City
 Bronx
 </td>
 <td style="text-align:center;">
-0.44
+-0.70
 </td>
 </tr>
 <tr>
@@ -798,7 +782,7 @@ Bronx
 Brooklyn
 </td>
 <td style="text-align:center;">
-0.63
+0.56
 </td>
 </tr>
 <tr>
@@ -806,7 +790,7 @@ Brooklyn
 Manhattan
 </td>
 <td style="text-align:center;">
-0.40
+-0.18
 </td>
 </tr>
 <tr>
@@ -814,7 +798,7 @@ Manhattan
 Queens
 </td>
 <td style="text-align:center;">
-0.76
+0.51
 </td>
 </tr>
 <tr>
@@ -822,18 +806,18 @@ Queens
 Staten Island
 </td>
 <td style="text-align:center;">
-0.64
+0.86
 </td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>value_income&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_pop_vacant,bx_pop_vacant,bn_pop_vacant,mh_pop_vacant,q_pop_vacant,si_pop_vacant))
-population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing&quot;,font_size = 17)%&gt;% 
+<pre class="r"><code>value_income&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_value_income,bx_value_income,bn_value_income,mh_value_income,q_value_income,si_value_income))
+value_income%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between the median housing value and the median household income.&quot;,font_size = 17)%&gt;% 
   kable_styling(bootstrap_options = 
                   c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-The pearson correlation cofficient between total of population and the number of vacant housing
+The pearson correlation cofficient between the median housing value and the median household income.
 </caption>
 <thead>
 <tr>
@@ -897,12 +881,12 @@ Staten Island
 </tbody>
 </table>
 <pre class="r"><code>pop_value&lt;-data.frame(&#39;Area&#39;=c(&quot;New York City&quot;,&quot;Bronx&quot;,&quot;Brooklyn&quot;,&quot;Manhattan&quot;,&quot;Queens&quot;,&quot;Staten Island&quot;),&#39;Pearson correlation coefficient&#39;=c(nyc_pop_value,bx_pop_value,bn_pop_value,mh_pop_value,q_pop_value,si_pop_value))
-population_vacant%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the number of vacant housing&quot;,font_size = 17)%&gt;% 
+pop_value%&gt;%kable(digits=2,align=&quot;c&quot;,caption = &quot;The pearson correlation cofficient between total of population and the median housing value.&quot;,font_size = 17)%&gt;% 
   kable_styling(bootstrap_options = 
                   c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-The pearson correlation cofficient between total of population and the number of vacant housing
+The pearson correlation cofficient between total of population and the median housing value.
 </caption>
 <thead>
 <tr>
@@ -920,7 +904,7 @@ Pearson.correlation.coefficient
 New York City
 </td>
 <td style="text-align:center;">
-0.62
+0.15
 </td>
 </tr>
 <tr>
@@ -928,7 +912,7 @@ New York City
 Bronx
 </td>
 <td style="text-align:center;">
-0.44
+0.03
 </td>
 </tr>
 <tr>
@@ -936,7 +920,7 @@ Bronx
 Brooklyn
 </td>
 <td style="text-align:center;">
-0.63
+-0.02
 </td>
 </tr>
 <tr>
@@ -944,7 +928,7 @@ Brooklyn
 Manhattan
 </td>
 <td style="text-align:center;">
-0.40
+0.29
 </td>
 </tr>
 <tr>
@@ -952,7 +936,7 @@ Manhattan
 Queens
 </td>
 <td style="text-align:center;">
-0.76
+-0.03
 </td>
 </tr>
 <tr>
@@ -960,7 +944,7 @@ Queens
 Staten Island
 </td>
 <td style="text-align:center;">
-0.64
+0.81
 </td>
 </tr>
 </tbody>
@@ -968,12 +952,11 @@ Staten Island
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
-<p>[~200 words]</p>
-<p>Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.</p>
+<p>As the result of polts and tables, we can test the hypotheses.In the first hypothesis, we assume the amount of urban population change is negatively related to the number of vacant houses.From the study results,only the bronx county can fulfill this assumption. In the second hypothesis, we assume the value of the house is positively correlated with the income of the household.This assumption is basically true. In the third hypothesis, we can only find the amount of changing in urban population is positively correlated with house value in Manhattan and Staten Island.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<p>All sources are cited in a consistent manner</p>
+<p><a href="http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r" class="uri">http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r</a>.  <a href="https://www1.nyc.gov/site/planning/index.page" class="uri">https://www1.nyc.gov/site/planning/index.page</a>.</p>
 </div>
 
 <!-- give the footer some space -->
